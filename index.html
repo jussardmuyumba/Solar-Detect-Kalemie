@@ -62,6 +62,41 @@ footer { background: #222; color: white; padding: 15px; }
      alt="Maison solaire" 
      style="width:100%; max-width:600px; border-radius:15px; margin:10px 0;">
 <p>©2026</p>
+  <br><br>
+<h2>📋 Demander une Étude Solaire Gratuite</h2>
+<p>Remplissez ce formulaire, nous vous répondons sur WhatsApp.</p>
+
+<form onsubmit="envoyerWhatsApp(event)" style="max-width:500px; text-align:left; margin:auto;">
+  <label>Votre Nom :</label><br>
+  <input id="nom" type="text" placeholder="Ex: Jussard Muyumba" required style="width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid #ccc;"><br>
+  
+  <label>Votre Quartier à Kalemie :</label><br>
+  <input id="quartier" type="text" placeholder="Ex: Lukuga, Katanga, ..." required style="width:100%; padding:12px; margin:8px 0; border-radius:8px; border:1px solid #ccc;"><br>
+  
+  <label>Ce que vous voulez :</label><br>
+  <select id="besoin" style="width:100%; padding:12px; margin:8px 0; border-radius:8px;">
+    <option>Éclairage maison</option>
+    <option>Charger téléphones + TV</option>
+    <option>Installation complète maison</option>
+    <option>Pour mon commerce</option>
+  </select><br><br>
+  
+  <button type="submit" style="background-color:#25D366; color:white; padding:15px 25px; border:none; border-radius:50px; font-weight:bold; font-size:17px; width:100%; cursor:pointer;">
+    Envoyer sur WhatsApp 📲
+  </button>
+</form>
+
+<script>
+function envoyerWhatsApp(event){
+  event.preventDefault();
+  var nom = document.getElementById('nom').value;
+  var quartier = document.getElementById('quartier').value;
+  var besoin = document.getElementById('besoin').value;
+  var message = "Bonjour Jussard, je suis " + nom + " du quartier " + quartier + ". Je veux : " + besoin + ". (Depuis le site Solar Detect Kalemie)";
+  var url = "https://wa.me/243816767297?text=" + encodeURIComponent(message);
+  window.open(url, '_blank');
+}
+</script>
 </footer>
 
 </body>
