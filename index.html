@@ -293,7 +293,16 @@ function envoyerWhatsApp(event){
 <div style="text-align: center; margin-bottom: 30px;">
   <button onclick="imprimerRecu()" style="background: #0A7A42; color: white; border: none; padding: 14px 30px; border-radius: 30px; font-size: 16px; font-weight: bold;">Telecharger / Imprimer le Recu</button>
 </div>
-
+<script>
+function imprimerRecu(){
+  var contenu = document.getElementById('recu').outerHTML;
+  var fenetre = window.open('', '_blank');
+  fenetre.document.write('<html><head><title>Recu - Solar Detect Kalemie</title></head><body style="font-family:Arial;">' + contenu + '</body></html>');
+  fenetre.document.close();
+  fenetre.focus();
+  setTimeout(function(){ fenetre.print(); }, 500);
+}
+</script>
 	
 </body>
 </html>
