@@ -372,11 +372,202 @@ function imprimerRecu(){
 	<footer>
 <p>By Jussard MUYUMBA. Developpeur Programmeur</p>
   <br>
-
-	
   <p>©2026</p>
+		
 </div>
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solar Detect Kalemie - Espace Admin</title>
+<style>
+  *{box-sizing:border-box; font-family:Arial, sans-serif;}
+  body{margin:0; background:#f2f2f2; padding:15px;}
+  .card{max-width:520px; margin:20px auto; background:#fff; border:2px solid #111; border-radius:16px; padding:20px; box-shadow:0 10px 25px rgba(0,0,0,.12);}
+  h1{text-align:center; font-size:26px; margin:0 0 18px; color:#111;}
+  .login-title{display:flex; align-items:center; gap:10px; border:2px solid #111; border-radius:10px; padding:12px 15px; font-size:22px; font-weight:bold;}
+  label{display:block; margin:18px 0 6px; font-size:15px;}
+  input,select{width:100%; padding:12px; border:1.5px solid #111; border-radius:10px; font-size:15px; outline:none;}
+  input:focus{border-color:#ffcc00;}
+  .btn{width:100%; padding:14px; border:none; border-radius:10px; font-weight:bold; font-size:16px; cursor:pointer; margin-top:12px;}
+  .btn-yellow{background:#ffcc00; color:#111;}
+  .btn-black{background:#111; color:#fff;}
+  .btn-blue{background:#1a73e8; color:#fff;}
+  .error{color:red; font-size:13px; display:none; text-align:center; margin-top:8px;}
+  .hidden{display:none;}
+  .stat{background:#f9f9f9; border-radius:10px; padding:12px; margin-top:15px; font-size:14px;}
+  .recu{border:1.5px dashed #111; border-radius:10px; padding:16px; margin-top:15px; background:#fff;}
+  .recu h2{text-align:center; margin:0;}
+  .recu p{font-size:15px; line-height:1.7;}
+  .badge{display:inline-block; background:#0a9d3f; color:#fff; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:bold;}
+  table{width:100%; border-collapse:collapse; font-size:13px; margin-top:10px;}
+  th,td{border:1px solid #ddd; padding:7px; text-align:left;}
+  th{background:#111; color:#fff;}
+  @media print{ body *{visibility:hidden;} #zoneImpression, #zoneImpression *{visibility:visible;} #zoneImpression{position:absolute; left:0; top:0; width:100%;} .no-print{display:none !important;} }
+</style>
+</head>
+<body>
+
+<!-- ========== 1. ECRAN LOGIN - COMME TON CROQUIS ========== -->
+<div class="card" id="ecranLogin">
+  <h1>Création Reçu Client</h1>
+
+  <div class="login-title">👤 log IN Admin</div>
+
+  <label>Entre le mot de passe</label>
+  <input type="password" id="mdp" placeholder="••••••••">
+  <p class="error" id="msgErreur">❌ Mot de passe incorrect !</p>
+
+  <button class="btn btn-yellow" onclick="connexion()">CONNEXION</button>
+  <p style="text-align:center; font-size:12px; color:#888;">Espace réservé à l'administrateur Solar Detect Kalemie</p>
+</div>
+
+<!-- ========== 2. ESPACE ADMIN ========== -->
+<div class="card hidden" id="espaceAdmin">
+  <h1>🧾 Créer un Reçu</h1>
+  <p style="text-align:center; font-size:13px; color:#666;">Client ayant réservé une assistance et déjà payé</p>
+
+  <label>Nom du client</label>
+  <input id="nom" placeholder="Ex : Jean Kalume">
+
+  <label>Téléphone du client</label>
+  <input id="tel" placeholder="+243 ...">
+
+  <label>Type d'assistance réservée</label>
+  <select id="service">
+    <option>Assistance - Installation panneau solaire</option>
+    <option>Assistance - Dépannage panneau solaire</option>
+    <option>Assistance - Installation batterie / onduleur</option>
+    <option>Assistance - Réparation / Maintenance</option>
+    <option>Assistance - Visite technique à domicile</option>
+  </select>
+
+  <label>Montant payé (CDF)</label>
+  <input id="montant" type="number" placeholder="Ex : 50000">
+
+  <label>Mode de Paiement</label>
+  <select id="mode">
+    <option>Espèces</option>
+    <option>Mobile Money</option>
+    <option>Virement bancaire</option>
+  </select>
+
+  <p style="background:#f5f5f5; padding:10px; border-radius:8px;">Numéro de Reçu : <b id="numRecu">SDK-2026-001</b> | Statut : <span class="badge">PAYÉ</span></p>
+
+  <button class="btn btn-yellow" onclick="genererRecu()">Générer le Reçu</button>
+  <button class="btn btn-black" onclick="toggleStats()">📊 Voir les Statistiques</button>
+
+  <!-- STATS LIEES AU FORMULAIRE -->
+  <div class="stat hidden" id="zoneStats">
+    <b>📊 Statistiques</b>
+    <p>Total Reçus : <b id="stTotal">0</b> | Total Encaissé : <b id="stMontant">0</b> CDF</p>
+    <div id="stListe"></div>
+  </div>
+
+  <!-- RECU IMPRIMABLE -->
+  <div class="recu hidden" id="zoneImpression">
+    <h2>☀️ SOLAR DETECT KALEMIE</h2>
+    <p style="text-align:center; font-size:13px;">Installation • Réparation • Maintenance Solaire<br>Kalemie, RDC</p>
+    <hr>
+    <p><b>REÇU N° <span id="p_num"></span></b> <span class="badge">PAYÉ</span></p>
+    <p>
+      <b>Client :</b> <span id="p_nom"></span><br>
+      <b>Téléphone :</b> <span id="p_tel"></span><br>
+      <b>Assistance réservée :</b> <span id="p_service"></span><br>
+      <b>Montant payé :</b> <b><span id="p_montant"></span> CDF</b><br>
+      <b>Mode :</b> <span id="p_mode"></span><br>
+      <b>Date :</b> <span id="p_date"></span>
+    </p>
+    <p style="font-size:13px; color:#555;">Ce reçu confirme que le client a réservé une assistance et a déjà effectué le paiement.</p>
+    <p style="margin-top:25px;">Signature Admin : ___________________ &nbsp;&nbsp; Signature Client : ___________________</p>
+    <button class="btn btn-blue no-print" onclick="window.print()">🖨️ Imprimer le Reçu</button>
+  </div>
+
+  <button class="btn no-print" style="background:#eee;" onclick="deconnexion()">🔒 Déconnexion</button>
+</div>
+
+<script>
+  // === CHANGE TON MOT DE PASSE ICI ===
+  const MOT_DE_PASSE = "1234";
+
+  let recus = JSON.parse(localStorage.getItem("recus_sdk") || "[]");
+  majNumero();
+
+  function connexion(){
+    let mdp = document.getElementById("mdp").value;
+    if(mdp === MOT_DE_PASSE){
+      document.getElementById("ecranLogin").classList.add("hidden");
+      document.getElementById("espaceAdmin").classList.remove("hidden");
+      document.getElementById("msgErreur").style.display = "none";
+    } else {
+      document.getElementById("msgErreur").style.display = "block";
+    }
+  }
+
+  function deconnexion(){
+    document.getElementById("espaceAdmin").classList.add("hidden");
+    document.getElementById("ecranLogin").classList.remove("hidden");
+    document.getElementById("mdp").value = "";
+  }
+
+  function majNumero(){
+    let n = (recus.length + 1).toString().padStart(3,'0');
+    document.getElementById("numRecu").innerText = "SDK-2026-" + n;
+  }
+
+  function toggleStats(){
+    let z = document.getElementById("zoneStats");
+    z.classList.toggle("hidden");
+    afficherStats();
+  }
+
+  function afficherStats(){
+    let total = 0, html = "<table><tr><th>N°</th><th>Client</th><th>Montant</th><th>Date</th></tr>";
+    recus.forEach(r=>{
+      total += parseInt(r.montant);
+      html += `<tr><td>${r.num}</td><td>${r.nom}</td><td>${r.montant} CDF</td><td>${r.date}</td></tr>`;
+    });
+    html += "</table>";
+    document.getElementById("stTotal").innerText = recus.length;
+    document.getElementById("stMontant").innerText = total.toLocaleString();
+    document.getElementById("stListe").innerHTML = html;
+  }
+
+  function genererRecu(){
+    let nom = document.getElementById("nom").value.trim();
+    let tel = document.getElementById("tel").value.trim();
+    let service = document.getElementById("service").value;
+    let montant = document.getElementById("montant").value;
+    let mode = document.getElementById("mode").value;
+    if(!nom || !montant){ alert("Remplis Nom + Montant"); return; }
+
+    let num = document.getElementById("numRecu").innerText;
+    let date = new Date().toLocaleDateString("fr-FR");
+    recus.push({num, nom, tel, service, montant, mode, date});
+    localStorage.setItem("recus_sdk", JSON.stringify(recus));
+
+    document.getElementById("p_num").innerText = num;
+    document.getElementById("p_nom").innerText = nom;
+    document.getElementById("p_tel").innerText = tel;
+    document.getElementById("p_service").innerText = service;
+    document.getElementById("p_montant").innerText = parseInt(montant).toLocaleString();
+    document.getElementById("p_mode").innerText = mode;
+    document.getElementById("p_date").innerText = date;
+
+    document.getElementById("zoneImpression").classList.remove("hidden");
+    document.getElementById("zoneImpression").scrollIntoView({behavior:"smooth"});
+    afficherStats();
+    majNumero();
+    document.getElementById("nom").value=""; document.getElementById("tel").value=""; document.getElementById("montant").value="";
+  }
+
+  // Entrée = Connexion
+  document.getElementById("mdp").addEventListener("keyup", e=>{ if(e.key==="Enter") connexion(); });
+</script>
+</body>
+</html>
 	
 </body>
 </html>
