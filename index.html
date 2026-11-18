@@ -293,7 +293,129 @@ function envoyerWhatsApp(event){
 <div style="text-align: center; margin-bottom: 30px;">
   <button onclick="imprimerRecu()" style="background: #0A7A42; color: white; border: none; padding: 14px 30px; border-radius: 30px; font-size: 16px; font-weight: bold;">Telecharger / Imprimer le Recu</button>
 </div>
+
+<!-- FORMULAIRE POUR REMPLIR LE RECU -->
+<div style="max-width:650px; margin:30px auto; background:white; padding:20px; border-radius:15px; border:1px solid #eee; text-align:left; font-family:Arial;">
+  <h2 style="text-align:center; margin:0;">🧾 Creer un Recu</h2>
+  <p style="text-align:center; color:#666; font-size:13px;">Remplis, clique sur Generer, puis Imprimer.</p>
+
+  <label><b>Nom du Client *</b></label><br>
+  <input id="r_nom" type="text" placeholder="Ex: Jean Kalume" style="width:100%; padding:11px; margin:6px 0 12px 0; border-radius:8px; border:1px solid #ccc;"><br>
+
+  <label><b>Telephone du CLIENT *</b></label><br>
+  <input id="r_tel_client" type="tel" placeholder="Ex: +243 97X XXX XXX" style="width:100%; padding:11px; margin:6px 0 12px 0; border-radius:8px; border:1px solid #ccc;"><br>
+
+  <label><b>Service / Produit *</b></label><br>
+  <input id="r_motif" type="text" placeholder="Ex: Depannage panneau solaire, Installation, Reparation PC..." style="width:100%; padding:11px; margin:6px 0 12px 0; border-radius:8px; border:1px solid #ccc;"><br>
+
+  <label><b>Montant Recu (FC) *</b></label><br>
+  <input id="r_montant" type="number" placeholder="Ex: 50000" style="width:100%; padding:11px; margin:6px 0 12px 0; border-radius:8px; border:1px solid #ccc;"><br>
+
+  <label><b>Mode de Paiement *</b></label><br>
+  <select id="r_mode" style="width:100%; padding:11px; margin:6px 0 12px 0; border-radius:8px; border:1px solid #ccc;">
+    <option>Especes</option>
+    <option>Airtel Money</option>
+    <option>Orange Money</option>
+    <option>M-Pesa</option>
+    <option>Virement / Autre</option>
+  </select><br>
+
+  <label><b>Numero du Recu</b></label><br>
+  <input id="r_numero" type="text" value="SDK-2026-001" style="width:100%; padding:11px; margin:6px 0 12px 0; border-radius:8px; border:1px solid #ccc;"><br>
+
+  <button onclick="genererRecu()" style="width:100%; background:#0A7A42; color:white; border:none; padding:14px; border-radius:10px; font-weight:bold; font-size:16px;">Generer le Recu ↓</button>
+</div>
+
+<!-- LE RECU A IMPRIMER -->
+<div id="recu" style="display:none; font-family: Arial, sans-serif; max-width: 650px; margin: 20px auto; border: 2px solid #0A7A42; border-radius: 12px; overflow: hidden; background: #fff; text-align:left;">
+
+  <div style="background:#0A7A42; color:white; padding:15px 20px; display:flex; align-items:center; justify-content:space-between;">
+    <img src="infotech.jpeg" style="width:60px; height:60px; object-fit:contain; background:white; border-radius:10px; padding:2px;">
+    <div style="text-align:center; flex:1;">
+      <div style="font-size:24px; font-weight:bold; line-height:1;">SOLAR DETECT</div>
+      <div style="font-size:13px;">KALEMIE - Par InfoTech.Com</div>
+      <div style="font-size:10px; margin-top:4px;">Energie Solaire | Installation | Maintenance | Informatique</div>
+    </div>
+    <img src="infotech.jpeg" style="width:60px; height:60px; object-fit:contain; background:white; border-radius:10px; padding:2px;">
+  </div>
+
+  <div style="padding: 20px 25px 0px 25px; text-align: center;">
+    <div style="display: inline-block; background: #FFF3CD; color: #856404; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 14px;">PREUVE DE PAIEMENT</div>
+    <div style="font-size: 13px; color: #666; margin-top: 10px;">Recu N : <b id="aff_numero" style="color:#000;">-</b> | Date : <b id="aff_date" style="color:#000;">-</b></div>
+  </div>
+
+  <div style="padding: 20px 25px;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+      <tr>
+        <td style="padding: 8px; color: #666; width: 40%;">Nom du Client :</td>
+        <td id="aff_nom" style="padding: 8px; font-weight: bold; border-bottom: 1px dashed #ddd;">-</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px; color: #666;">Telephone du Client :</td>
+        <td id="aff_tel_client" style="padding: 8px; font-weight: bold; border-bottom: 1px dashed #ddd;">-</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px; color: #666;">Service / Produit :</td>
+        <td id="aff_motif" style="padding: 8px; font-weight: bold; border-bottom: 1px dashed #ddd;">-</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px; color: #666;">Mode de Paiement :</td>
+        <td id="aff_mode" style="padding: 8px; font-weight: bold; border-bottom: 1px dashed #ddd;">-</td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="margin: 0px 25px; background: #F0F9F3; border: 1px solid #0A7A42; border-radius: 10px; padding: 15px; text-align: center;">
+    <div style="font-size: 13px; color: #666;">MONTANT RECU</div>
+    <div id="aff_montant" style="font-size: 32px; font-weight: bold; color: #0A7A42; margin: 5px 0;">-</div>
+    <div style="margin-top: 10px; display: inline-block; background: #0A7A42; color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold;">PAYE EN TOTALITE</div>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; padding: 25px;">
+    <div style="text-align: center; width: 45%;">
+      <div style="font-size: 12px; color: #888; margin-bottom: 30px;">Signature Client</div>
+      <div style="border-top: 1px solid #000; padding-top: 5px; font-size: 12px;">Le Client</div>
+    </div>
+    <div style="text-align: center; width: 45%;">
+      <div style="font-size: 12px; color: #888; margin-bottom: 30px;">Signature & Cachet</div>
+      <div style="border-top: 1px solid #000; padding-top: 5px; font-size: 12px; font-weight: bold; color: #0A7A42;">SOLAR DETECT - KALEMIE</div>
+    </div>
+  </div>
+
+  <div style="background: #f8f8f8; padding: 12px; text-align: center; font-size: 11px; color: #555; border-top: 1px solid #eee; line-height:1.6;">
+    Merci pour votre confiance ! Gardez ce recu pour toute reclamation.<br>
+    <b>InfoTech.Com - Solar Detect Kalemie</b><br>
+    Quartier KAHITE, Bloc KALENGE 1, Av. KALENGE N°0034, Kalemie - Tanganyika, RDC<br>
+    <b>Tel / WhatsApp Solar Detect : +243 816 767 297</b> | Email : infotech.kalemie@gmail.com
+  </div>
+
+</div>
+
+<div style="text-align: center; margin-bottom: 30px; display:none;" id="btn_imprimer">
+  <button onclick="imprimerRecu()" style="background: #0A7A42; color: white; border: none; padding: 14px 30px; border-radius: 30px; font-size: 16px; font-weight: bold;">Telecharger / Imprimer le Recu Seul</button>
+</div>
+
 <script>
+function genererRecu(){
+  var nom = document.getElementById('r_nom').value;
+  var tel = document.getElementById('r_tel_client').value;
+  var motif = document.getElementById('r_motif').value;
+  var montant = document.getElementById('r_montant').value;
+  var mode = document.getElementById('r_mode').value;
+  var numero = document.getElementById('r_numero').value;
+  if(!nom || !tel || !motif || !montant){ alert('Remplis Nom, Telephone Client, Service et Montant !'); return; }
+  document.getElementById('aff_nom').innerText = nom;
+  document.getElementById('aff_tel_client').innerText = tel;
+  document.getElementById('aff_motif').innerText = motif;
+  document.getElementById('aff_mode').innerText = mode;
+  document.getElementById('aff_numero').innerText = numero;
+  document.getElementById('aff_montant').innerText = montant + ' FC';
+  var d = new Date();
+  document.getElementById('aff_date').innerText = d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear();
+  document.getElementById('recu').style.display = 'block';
+  document.getElementById('btn_imprimer').style.display = 'block';
+  document.getElementById('recu').scrollIntoView({behavior:'smooth'});
+}
 function imprimerRecu(){
   var contenu = document.getElementById('recu').outerHTML;
   var fenetre = window.open('', '_blank');
@@ -304,5 +426,6 @@ function imprimerRecu(){
 }
 </script>
 	
+
 </body>
 </html>
