@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Solar Detect</title>
+<style>
+body{font-family:Arial; padding:15px; background:#f2f2f2}
+.card{background:white; padding:15px; border-radius:10px; margin-bottom:15px}
+input,select{width:100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:8px}
+button{width:100%; padding:12px; background:#1a73e8; color:white; border:none; border-radius:8px; font-weight:bold}
+table{width:100%; border-collapse:collapse; font-size:13px}
+td,th{border:1px solid #ddd; padding:6px; text-align:left}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<div id="login" class="card">
+  <h2>🔒 Accès Admin</h2>
+  <p>Entre ton code à 4 chiffres</p>
+  <input type="password" id="pin" maxlength="4" inputmode="numeric" placeholder="****">
+  <button onclick="checkPin()">Débloquer</button>
+  <p id="err" style="color:red"></p>
+</div>
+
+<div id="panel" class="hidden">
+  <h2>📊 Solar Detect - Admin</h2>
+  <div class="card">
+    <b>Total Reçus :</b> <span id="totalRecus">0</span> | 
+    <b>Total Cautions :</b> <span id="totalMontant">0</span> CDF
+  </div>
+
+  <div class="card">
+    <h3>🧾 Nouveau Reçu N° <span id="nextNum">001</span></h3>
+    <input id="nom" placeholder="Nom du client">
+    <select id="service">
+      <option>Installation Panneau Solaire</option>
+      <option>Réparation / Maintenance</option>
+      <option>Installation Batterie / Onduleur</option>
+      <option>Autre Service</option>
+    </select>
+    <input id="montant" type="number" placeholder="Montant caution en CDF">
+    <button onclick="creerRecu()">Créer Reçu & Imprimer</button>
+  </div>
+
+  <div class="card">
+    <h3>📋 Historique des Reçus</h3>
+    <table>
+      <tr><th>N°</th><th>Client</th><th>Service</th><th>Montant</th><th>Date</th></tr>
+      <tbody id="liste"></tbody>
+    </table>
+    <br>
+    <button onclick="location.reload()" style="background:#666">🔒 Verrouiller</button>
+  </div>
+</div>
+
+<script>
+let PIN = "1234"; // <-- CHANGE TON CODE ICI, ex: "2026"
+let recus = JSON.parse(localStorage.getItem("recus_solar") || "[]");
+
+function checkPin(){
+  if(document.getElementById("pin").value === PIN){
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("panel").classList.remove("hidden");
+    afficher();
+  } else {
+    document.getElementById("err").innerText = "Code incorrect !";
+  }
+}
+
+function afficher(){
+  let total = 0;
+  let html = "";
+  recus.forEach(r=>{
+    total += parseInt(r.montant);
+    html += `<tr><td>${r.num}</td><td>${r.nom}</td><td>${r.service}</td><td>${r.montant}</td><td>${r.date}</td></tr>`;
+  });
+  document.getElementById("liste").innerHTML = html;
+  document.getElementById("totalRecus").innerText = recus.length;
+  document.getElementById("totalMontant").innerText = total.toLocaleString();
+  let next = (recus.length+1).toString().padStart(3,'0');
+  document.getElementById("nextNum").innerText = next;
+}
+
+function creerRecu(){
+  let nom = document.getElementById("nom").value;
+  let service = document.getElementById("service").value;
+  let montant = document.getElementById("montant").value;
+  if(!nom || !montant){ alert("Remplis nom + montant"); return; }
+  let num = (recus.length+1).toString().padStart(3,'0');
+  let date = new Date().toLocaleDateString("fr-FR");
+  let r = {num, nom, service, montant, date};
+  recus.push(r);
+  localStorage.setItem("recus_solar", JSON.stringify(recus));
+  alert("Reçu N°"+num+" créé pour "+nom);
+  afficher();
+  // Ouvre l'impression du reçu
+  let w = window.open("", "_blank");
+  w.document.write(`<h2>SOLAR DETECT KALEMIE</h2><h3>REÇU N°${num}</h3><p>Client: ${nom}<br>Service: ${service}<br>Caution payée: ${montant} CDF<br>Date: ${date}</p><br><p>Signature: ___________</p>`);
+  w.print();
+  document.getElementById("nom").value="";
+  document.getElementById("montant").value="";
+}
+</script>
+</body>
+</html>
