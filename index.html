@@ -323,44 +323,27 @@ function envoyerWhatsApp(event){
   <button onclick="imprimerRecu()" style="background: #0A7A42; color: white; border: none; padding: 14px 30px; border-radius: 30px; font-size: 16px; font-weight: bold;">Telecharger / Imprimer le Recu Seul</button>
 </div>
 
-<script>
 function genererRecu(){
-  var nom = document.getElementById('r_nom').value;
-  var tel = document.getElementById('r_tel_client').value;
-  var motif = document.getElementById('r_motif').value;
-  var montant = document.getElementById('r_montant').value;
-  var mode = document.getElementById('r_mode').value;
-  var numero = document.getElementById('r_numero').value;
-  if(!nom || !tel || !motif || !montant){ alert('Remplis Nom, Telephone Client, Service et Montant !'); return; }
-  document.getElementById('aff_nom').innerText = nom;
-  document.getElementById('aff_tel_client').innerText = tel;
-  document.getElementById('aff_motif').innerText = motif;
-  document.getElementById('aff_mode').innerText = mode;
-  document.getElementById('aff_numero').innerText = numero;
-  document.getElementById('aff_montant').innerText = montant + ' FC';
-  var d = new Date();
-  document.getElementById('aff_date').innerText = d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear();
-  document.getElementById('recu').style.display = 'block';
-  document.getElementById('btn_imprimer').style.display = 'block';
-  document.getElementById('recu').scrollIntoView({behavior:'smooth'});
-}
-function imprimerRecu(){
-  var contenu = document.getElementById('recu').outerHTML;
-  var fenetre = window.open('', '_blank');
-  fenetre.document.write('<html><head><title>Recu - Solar Detect Kalemie</title></head><body style="font-family:Arial;">' + contenu + '</body></html>');
-  fenetre.document.close();
-  fenetre.focus();
-  setTimeout(function(){ fenetre.print(); }, 500);
-}
-</script>
-	
-<script data-goatcounter="https://solar-detect-kalemie.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  // On prend tous les inputs du formulaire, dans l'ordre
+  // Ordre sur ta capture : 0=Nom, 1=Téléphone, 2=Type, 3=Montant
+  const inputs = document.querySelectorAll('input');
+  
+  const nom = inputs[0] ? inputs[0].value.trim() : "";
+  const tel = inputs[1] ? inputs[1].value.trim() : "";
+  const typeAssistance = inputs[2] ? inputs[2].value.trim() : "";
+  const montant = inputs[3] ? inputs[3].value.trim() : "";
 
-<div style="text-align:center; margin: 30px 0;">
-  <a href="https://solar-detect-kalemie.goatcounter.com/" target="_blank" style="display:inline-block; background:#1a73e8; color:white; padding:12px 20px; border-radius:8px; text-decoration:none; font-weight:bold;">
-    📊 Voir les Statistiques
-  </a>
-</div>
+  console.log("NOM:", nom, "MONTANT:", montant);
+
+  if(!nom || !montant){
+    alert("Remplis Nom + Montant - Debug: Nom=["+nom+"] Montant=["+montant+"]");
+    return;
+  }
+
+  // ICI tu mets ton ancien code qui génère le reçu
+  // Exemple :
+  alert("Reçu généré pour " + nom + " - " + montant + " CDF");
+}
 
 
 <!DOCTYPE html>
