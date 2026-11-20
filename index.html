@@ -553,7 +553,29 @@ function genererRecu(){
 		
 </div>
 
+function genererRecu(){
+  const nom = document.getElementById('nom').value.trim();
+  const tel = document.getElementById('tel').value.trim();
+  const service = document.getElementById('service').value;
+  const montant = document.getElementById('montant').value.trim();
+  const mode = document.getElementById('mode').value;
 
+  if(!nom || !montant){
+    alert("Remplis Nom + Montant");
+    return;
+  }
+
+  document.getElementById('p_nom').textContent = nom;
+  document.getElementById('p_tel').textContent = tel;
+  document.getElementById('p_service').textContent = service;
+  document.getElementById('p_montant').textContent = montant;
+  document.getElementById('p_mode').textContent = mode;
+  document.getElementById('p_date').textContent = new Date().toLocaleDateString('fr-FR');
+  document.getElementById('p_num').textContent = "SDK-" + Date.now().toString().slice(-6);
+
+  document.getElementById('zoneImpression').classList.remove('hidden');
+  window.print();
+}
 	
 </body>
 </html>
