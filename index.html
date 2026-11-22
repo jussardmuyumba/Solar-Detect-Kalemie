@@ -433,32 +433,6 @@ function envoyerWhatsApp(event){
   <button onclick="imprimerRecu()" style="background: #0A7A42; color: white; border: none; padding: 14px 30px; border-radius: 30px; font-size: 16px; font-weight: bold;">Telecharger / Imprimer le Recu Seul</button>
 </div>
 
-<div>
-	
-function genererRecu(){
-  // On prend tous les inputs du formulaire, dans l'ordre
-  // Ordre sur ta capture : 0=Nom, 1=Téléphone, 2=Type, 3=Montant
-  const inputs = document.querySelectorAll('input');
-  
-  const nom = inputs[0] ? inputs[0].value.trim() : "";
-  const tel = inputs[1] ? inputs[1].value.trim() : "";
-  const typeAssistance = inputs[2] ? inputs[2].value.trim() : "";
-  const montant = inputs[3] ? inputs[3].value.trim() : "";
-
-  console.log("NOM:", nom, "MONTANT:", montant);
-
-  if(!nom || !montant){
-    alert("Remplis Nom + Montant - Debug: Nom=["+nom+"] Montant=["+montant+"]");
-    return;
-  }
-
-  // ICI tu mets ton ancien code qui génère le reçu
-  // Exemple :
-  alert("Reçu généré pour " + nom + " - " + montant + " CDF");
-}
-
-</div>
-
 	
 <!DOCTYPE html>
 <html lang="fr">
