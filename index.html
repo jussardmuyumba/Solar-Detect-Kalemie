@@ -17,7 +17,110 @@ footer { background: #222; color: white; padding: 15px; }
 <body>
 </style>
 
+	
+  <!-- DEBUT BLOC  DE LA BASE DES DONNEES DES REGULATEURS ET VRAIS ET FAKES SELON LES MODELS ET LES UTILISATION -->
+	<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solar Detect - Congo</title>
 
+
+<style>
+body{font-family:Arial;background:#f2f2f2;margin:0;padding:8px}
+h1{text-align:center;color:#0a6b2e;font-size:19px;margin:6px 0;line-height:1.2}
+h1 small{font-size:13px;color:#444}
+label{display:block;max-width:520px;margin:8px auto 2px;font-size:14px}
+select,input{width:100%;max-width:520px;display:block;margin:6px auto;padding:9px;border-radius:8px;border:1px solid #ccc;font-size:14px;box-sizing:border-box}
+#liste{max-width:520px;margin:0 auto}
+.card{background:#fff;padding:8px 10px;margin:6px 0;border-radius:8px;border-left:5px solid #ccc;font-size:13px;line-height:1.35}
+.vrai{border-color:green}.fake{border-color:red}.doute{border-color:orange}
+.badge{font-weight:bold;padding:2px 6px;border-radius:4px;color:#fff;font-size:11px}
+.bv{background:green}.bf{background:red}.bd{background:orange}
+small{color:#555;font-size:12px}
+</style>
+
+
+</head>
+<body>
+<h1>☀️ SOLAR DETECT ☀️<br><small>Congo & Afrique - VRAI ou FAKE ?</small></h1>
+
+<label>Tu es où ?</label>
+<select id="ville">
+<option>Kalemie</option>
+<option>Lubumbashi</option>
+<option>Bukavu</option>
+<option>Goma</option>
+<option>Kinshasa</option>
+<option>Autre</option>
+</select>
+
+<input id="recherche" placeholder="🔍 Tape ton modèle... ex: Victron, Maxima, 60A" onkeyup="filtrer()">
+
+<div id="liste"></div>
+
+<script>
+const modeles=[
+{name:"Victron BlueSolar 75/15",type:"MPPT",ecrit:"15A",reel:"15A",verdict:"VRAI",prix:"120$",conseil:"Bon choix. Vrai MPPT."},
+{name:"Victron SmartSolar 100/20",type:"MPPT",ecrit:"20A",reel:"20A",verdict:"VRAI",prix:"140$",conseil:"Avec Bluetooth, top."},
+{name:"Epever Tracer 4210AN",type:"MPPT",ecrit:"40A",reel:"40A",verdict:"VRAI",prix:"150$",conseil:"Bon pour 2-3 panneaux."},
+{name:"Epever Tracer 6420AN",type:"MPPT",ecrit:"60A",reel:"60A",verdict:"VRAI",prix:"210$",conseil:"Remplace tous les FAKE 60A."},
+{name:"SRNE ML2440",type:"MPPT",ecrit:"40A",reel:"40A",verdict:"VRAI",prix:"120$",conseil:"Petit et fiable."},
+{name:"SLC-MPPT2420E Gris",type:"FAKE MPPT",ecrit:"20A",reel:"12A",verdict:"FAKE",prix:"30$",conseil:"C'est un PWM déguisé. Ne mets pas 2 panneaux."},
+{name:"Maxima Solar Bleu",type:"FAKE MPPT",ecrit:"60A",reel:"20A",verdict:"FAKE",prix:"35$",conseil:"Vide dedans, chauffe vite. Danger."},
+{name:"MPPT Solar Bleu/Noir 13.3V",type:"FAKE MPPT",ecrit:"60A",reel:"20A",verdict:"FAKE",prix:"28$",conseil:"Écran 13.3V toujours, classique marché."},
+{name:"Copie BlueSolar 13.0",type:"FAKE COPIE",ecrit:"30A",reel:"10A",verdict:"FAKE",prix:"30$",conseil:"Copie Victron. Pas de Bluetooth."},
+{name:"MIV ENERGY Blanc",type:"DOUTEUX",ecrit:"30A",reel:"20A ?",verdict:"DOUTEUX",prix:"35$",conseil:"À tester. Marque inconnue."},
+{name:"Solar Charge Controller Bleu USB",type:"PWM",ecrit:"60A",reel:"20A",verdict:"FAKE",prix:"18$",conseil:"Le plus vendu à Kalemie. Max 1 panneau 250W."},
+{name:"LINEBA Orange/Noir",type:"PWM",ecrit:"100A",reel:"30A",verdict:"FAKE",prix:"25$",conseil:"Si on te dit 100A, c'est faux."},
+{name:"iCharger Vert LS20A",type:"PWM",ecrit:"20A",reel:"20A",verdict:"DOUTEUX",prix:"20$",conseil:"Petit PWM, OK pour 1 panneau."},
+{name:"PWM Orange Générique 8 bornes",type:"PWM",ecrit:"60A",reel:"20A",verdict:"FAKE",prix:"20$",conseil:"Ne mets pas 3 panneaux dessus."},
+{name:"PowMr FAKE Bleu",type:"FAKE MPPT",ecrit:"60A",reel:"20A",verdict:"FAKE",prix:"35$",conseil:"Copie du vrai PowMr."},
+{name:"Fangpusun MPPT Copie",type:"FAKE MPPT",ecrit:"60A",reel:"20A",verdict:"FAKE",prix:"40$",conseil:"Copie Victron, vendu à Goma."},
+{name:"MakeSkyBlue MPPT",type:"FAKE MPPT",ecrit:"60A",reel:"25A",verdict:"FAKE",prix:"50$",conseil:"Joli mais pas vrai 60A."},
+{name:"Felicity MPPT 100A",type:"MPPT",ecrit:"100A",reel:"100A",verdict:"VRAI",prix:"280$",conseil:"Pour grande maison lithium."},
+{name:"Must PC18-6015F",type:"MPPT",ecrit:"60A",reel:"60A",verdict:"VRAI",prix:"160$",conseil:"Bon rapport qualité."},
+{name:"Morningstar ProStar 30",type:"PWM Pro",ecrit:"30A",reel:"30A",verdict:"VRAI",prix:"130$",conseil:"Très solide, 5 ans."},
+];
+
+function afficher(liste){
+let h="";
+liste.forEach(m=>{
+let cls=m.verdict=="VRAI"?"vrai":m.verdict=="FAKE"?"fake":"doute";
+let bg=m.verdict=="VRAI"?"bv":m.verdict=="FAKE"?"bf":"bd";
+h+=`<div class="card ${cls}"><b>${m.name}</b><br><span class="badge ${bg}">${m.verdict}</span> ${m.type} - Écrit: ${m.ecrit} | Réel: ${m.reel}<br><small>Prix ~${m.prix} - ${m.conseil}</small></div>`;
+});
+document.getElementById("liste").innerHTML=h;
+}
+function filtrer(){
+let q=document.getElementById("recherche").value.toLowerCase();
+afficher(modeles.filter(m=>m.name.toLowerCase().includes(q)));
+}
+// AU DEBUT : ON NE MONTRE RIEN - C'EST LA MAGIE
+document.getElementById("liste").innerHTML = "<p style='text-align:center;color:#555;margin-top:20px'>🔍 Tape le nom de ton régulateur en haut...<br><small>Ex: Maxima, Victron, Epever...</small></p>";
+
+function filtrer(){
+  let q = document.getElementById("recherche").value.toLowerCase().trim();
+  if(q === ""){
+    // Si il efface, on cache tout de nouveau
+    document.getElementById("liste").innerHTML = "<p style='text-align:center;color:#555;margin-top:20px'>🔍 Tape le nom de ton régulateur en haut...<br><small>Ex: Maxima, Victron, Epever...</small></p>";
+    return;
+  }
+  afficher(modeles.filter(m=>m.name.toLowerCase().includes(q)));
+}
+</script>
+<p style="text-align:center"><small>Solar Detect - Par Kalemie, pour le Congo 🇨🇩</small></p>
+</body>
+</html>
+
+
+
+
+
+
+
+	
 <header>
 <h1><div style="background-color:#FFD700; padding:12px 8px; display:flex; align-items:center; justify-content:center; gap:8px;">
   <img src="infotech.jpeg" alt="InfoTech" style="width:65px; height:65px; object-fit:contain; background:white; border-radius:10px; padding:2px;">
