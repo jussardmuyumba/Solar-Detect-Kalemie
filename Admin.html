@@ -3,105 +3,190 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin - Solar Detect</title>
+<title>Admin - Solar Detect Kalemie</title>
 <style>
-body{font-family:Arial; padding:15px; background:#f2f2f2}
-.card{background:white; padding:15px; border-radius:10px; margin-bottom:15px}
-input,select{width:100%; padding:10px; margin:5px 0; border:1px solid #ccc; border-radius:8px}
-button{width:100%; padding:12px; background:#1a73e8; color:white; border:none; border-radius:8px; font-weight:bold}
-table{width:100%; border-collapse:collapse; font-size:13px}
-td,th{border:1px solid #ddd; padding:6px; text-align:left}
-.hidden{display:none}
+body{font-family:Arial,sans-serif;background:#0f172a;color:white;padding:15px}
+.box{background:white;color:black;padding:20px;border-radius:12px;max-width:520px;margin:20px auto}
+input,select{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:8px;font-size:16px}
+button{width:100%;padding:14px;border:none;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer;margin-top:10px}
+.btn-bleu{background:#2563eb;color:white}
+.btn-vert{background:#16a34a;color:white}
+.btn-orange{background:#ea580c;color:white}
+.btn-rouge{background:#dc2626;color:white}
+.btn-gris{background:#64748b;color:white}
+.recu{background:white;color:black;padding:20px;border-radius:10px;max-width:520px;margin:20px auto;border:2px dashed #000}
+.ligne{display:flex;justify-content:space-between;border-bottom:1px solid #ddd;padding:6px 0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{border:1px solid #ddd;padding:8px;text-align:left}
+th{background:#0f172a;color:white}
+@media print{body{background:white} .no-print{display:none} .recu{border:none}}
 </style>
 </head>
 <body>
 
-<div id="login" class="card">
-  <h2>🔒 Accès Admin</h2>
-  <p>Entre ton code à 4 chiffres</p>
-  <input type="password" id="pin" maxlength="4" inputmode="numeric" placeholder="****">
-  <button onclick="checkPin()">Débloquer</button>
-  <p id="err" style="color:red"></p>
+<h2 style="text-align:center">SOLAR DETECT KALEMIE - ADMIN</h2>
+
+<!-- 1. LOGIN -->
+<div id="pageLogin" class="box">
+  <h3>Log In Admin</h3>
+  <p>Entrez le mot de passe</p>
+  <input type="password" id="motdepasse" placeholder="Mot de passe">
+  <button class="btn-bleu" onclick="connexion()">Connexion</button>
 </div>
 
-<div id="panel" class="hidden">
-  <h2>📊 Solar Detect - Admin</h2>
-  <div class="card">
-    <b>Total Reçus :</b> <span id="totalRecus">0</span> | 
-    <b>Total Cautions :</b> <span id="totalMontant">0</span> CDF
-  </div>
+<!-- 2. FORMULAIRE -->
+<div id="pageFormulaire" class="box" style="display:none">
+  <h3>Création du Reçu Client</h3>
+  <p id="totalRecus" style="font-weight:bold;color:#2563eb">Total reçus créés : 0</p>
+  <input type="text" id="nomClient" placeholder="Nom du client">
+  <input type="tel" id="telClient" placeholder="Téléphone du client">
+  <select id="serviceClient">
+    <option>Installation panneau solaire</option>
+    <option>Assistance - Dépannage panneau solaire</option>
+    <option>Maintenance</option>
+    <option>Vente matériel</option>
+  </select>
+  <input type="number" id="montantClient" placeholder="Montant en CDF">
+  <select id="modeClient">
+    <option>Mobile Money</option>
+    <option>Espèces</option>
+    <option>Banque</option>
+  </select>
+  <select id="statutClient">
+    <option>Payé</option>
+    <option>Avance</option>
+    <option>Non payé</option>
+  </select>
+  <button class="btn-vert" onclick="genererRecu()">Générer le Reçu</button>
+  <button class="btn-orange" onclick="voirStatistiques()">📊 Statistique - Voir tous les reçus</button>
+  <button class="btn-rouge" onclick="deconnexion()">🔒 Déconnexion</button>
+</div>
 
-  <div class="card">
-    <h3>🧾 Nouveau Reçu N° <span id="nextNum">001</span></h3>
-    <input id="nom" placeholder="Nom du client">
-    <select id="service">
-      <option>Installation Panneau Solaire</option>
-      <option>Réparation / Maintenance</option>
-      <option>Installation Batterie / Onduleur</option>
-      <option>Autre Service</option>
-    </select>
-    <input id="montant" type="number" placeholder="Montant caution en CDF">
-    <button onclick="creerRecu()">Créer Reçu & Imprimer</button>
+<!-- 3. RECU A IMPRIMER -->
+<div id="pageRecu" style="display:none">
+  <div class="recu" id="recuAffiche"></div>
+  <div class="box no-print">
+    <button class="btn-bleu" onclick="window.print()">Imprimer le Reçu</button>
+    <button class="btn-gris" onclick="nouveauRecu()">Nouveau Reçu</button>
+    <button class="btn-orange" onclick="voirStatistiques()">📊 Statistique</button>
+    <button class="btn-rouge" onclick="deconnexion()">🔒 Déconnexion</button>
   </div>
+</div>
 
-  <div class="card">
-    <h3>📋 Historique des Reçus</h3>
-    <table>
-      <tr><th>N°</th><th>Client</th><th>Service</th><th>Montant</th><th>Date</th></tr>
-      <tbody id="liste"></tbody>
-    </table>
-    <br>
-    <button onclick="location.reload()" style="background:#666">🔒 Verrouiller</button>
-  </div>
+<!-- 4. STATISTIQUES -->
+<div id="pageStats" class="box" style="display:none;max-width:650px">
+  <h3>📊 Tous les Reçus</h3>
+  <p id="resumeStats" style="font-weight:bold"></p>
+  <div id="listeRecus"></div>
+  <button class="btn-gris" onclick="retourFormulaire()">⬅ Retour au Formulaire</button>
+  <button class="btn-rouge" onclick="deconnexion()">🔒 Déconnexion</button>
 </div>
 
 <script>
-let PIN = "1212"; // <-- CHANGE TON CODE ICI, ex: "2026"
-let recus = JSON.parse(localStorage.getItem("recus_solar") || "[]");
+const MOT_DE_PASSE = "admin123";
 
-function checkPin(){
-  if(document.getElementById("pin").value === PIN){
-    document.getElementById("login").classList.add("hidden");
-    document.getElementById("panel").classList.remove("hidden");
-    afficher();
+function connexion(){
+  let mdp = document.getElementById("motdepasse").value;
+  if(mdp === MOT_DE_PASSE){
+    document.getElementById("pageLogin").style.display = "none";
+    document.getElementById("pageFormulaire").style.display = "block";
+    afficherTotal();
   } else {
-    document.getElementById("err").innerText = "Code incorrect !";
+    alert("Mot de passe incorrect");
   }
 }
 
-function afficher(){
-  let total = 0;
-  let html = "";
-  recus.forEach(r=>{
-    total += parseInt(r.montant);
-    html += `<tr><td>${r.num}</td><td>${r.nom}</td><td>${r.service}</td><td>${r.montant}</td><td>${r.date}</td></tr>`;
-  });
-  document.getElementById("liste").innerHTML = html;
-  document.getElementById("totalRecus").innerText = recus.length;
-  document.getElementById("totalMontant").innerText = total.toLocaleString();
-  let next = (recus.length+1).toString().padStart(3,'0');
-  document.getElementById("nextNum").innerText = next;
+function deconnexion(){
+  document.getElementById("pageFormulaire").style.display = "none";
+  document.getElementById("pageRecu").style.display = "none";
+  document.getElementById("pageStats").style.display = "none";
+  document.getElementById("pageLogin").style.display = "block";
+  document.getElementById("motdepasse").value = "";
 }
 
-function creerRecu(){
-  let nom = document.getElementById("nom").value;
-  let service = document.getElementById("service").value;
-  let montant = document.getElementById("montant").value;
-  if(!nom || !montant){ alert("Remplis nom + montant"); return; }
-  let num = (recus.length+1).toString().padStart(3,'0');
+function afficherTotal(){
+  let total = localStorage.getItem("compteurRecu") || "0";
+  let el = document.getElementById("totalRecus");
+  if(el){ el.innerText = "Total reçus créés : " + total; }
+}
+
+function genererRecu(){
+  let nom = document.getElementById("nomClient").value.trim();
+  let tel = document.getElementById("telClient").value.trim();
+  let service = document.getElementById("serviceClient").value;
+  let montant = document.getElementById("montantClient").value.trim();
+  let mode = document.getElementById("modeClient").value;
+  let statut = document.getElementById("statutClient").value;
+
+  if(!nom || !montant){ alert("Remplis Nom + Montant"); return; }
+
+  let compteur = parseInt(localStorage.getItem("compteurRecu") || "0") + 1;
+  localStorage.setItem("compteurRecu", compteur);
+  let numero = "REC-" + String(compteur).padStart(3, "0");
   let date = new Date().toLocaleDateString("fr-FR");
-  let r = {num, nom, service, montant, date};
-  recus.push(r);
-  localStorage.setItem("recus_solar", JSON.stringify(recus));
-  alert("Reçu N°"+num+" créé pour "+nom);
-  afficher();
-  // Ouvre l'impression du reçu
-  let w = window.open("", "_blank");
-  w.document.write(`<h2>SOLAR DETECT KALEMIE</h2><h3>REÇU N°${num}</h3><p>Client: ${nom}<br>Service: ${service}<br>Caution payée: ${montant} CDF<br>Date: ${date}</p><br><p>Signature: ___________</p>`);
-  w.print();
-  document.getElementById("nom").value="";
-  document.getElementById("montant").value="";
+
+  // Sauvegarder le reçu pour Statistique
+  let liste = JSON.parse(localStorage.getItem("listeRecus") || "[]");
+  liste.push({numero:numero, date:date, nom:nom, tel:tel, service:service, montant:montant, mode:mode, statut:statut});
+  localStorage.setItem("listeRecus", JSON.stringify(liste));
+
+  let html = "<h2>SOLAR DETECT KALEMIE</h2>";
+  html += "<p style='text-align:center'>RECU DE PAIEMENT<br>Kalemie, RDC</p>";
+  html += "<div class='ligne'><b>N° Reçu :</b><span>"+numero+"</span></div>";
+  html += "<div class='ligne'><b>Date :</b><span>"+date+"</span></div>";
+  html += "<div class='ligne'><b>Client :</b><span>"+nom+"</span></div>";
+  html += "<div class='ligne'><b>Téléphone :</b><span>"+tel+"</span></div>";
+  html += "<div class='ligne'><b>Service :</b><span>"+service+"</span></div>";
+  html += "<div class='ligne'><b>Mode :</b><span>"+mode+"</span></div>";
+  html += "<div class='ligne'><b>Statut :</b><span>"+statut+"</span></div>";
+  html += "<h3 style='text-align:center'>Montant : "+montant+" CDF</h3>";
+  html += "<br><p>Signature : ___________________</p>";
+  html += "<p style='text-align:center;font-size:13px'>Merci pour votre confiance !</p>";
+
+  document.getElementById("recuAffiche").innerHTML = html;
+  document.getElementById("pageFormulaire").style.display = "none";
+  document.getElementById("pageRecu").style.display = "block";
+}
+
+function nouveauRecu(){
+  document.getElementById("pageRecu").style.display = "none";
+  document.getElementById("pageFormulaire").style.display = "block";
+  document.getElementById("nomClient").value = "";
+  document.getElementById("telClient").value = "";
+  document.getElementById("montantClient").value = "";
+  afficherTotal();
+}
+
+function voirStatistiques(){
+  let liste = JSON.parse(localStorage.getItem("listeRecus") || "[]");
+  let totalMontant = 0;
+  liste.forEach(r => { totalMontant += parseInt(r.montant || 0); });
+
+  document.getElementById("resumeStats").innerText = "Nombre de reçus : " + liste.length + " | Total : " + totalMontant + " CDF";
+
+  let html = "<table><tr><th>N°</th><th>Client</th><th>Montant</th><th>Date</th></tr>";
+  if(liste.length === 0){
+    html += "<tr><td colspan='4'>Aucun reçu pour le moment</td></tr>";
+  } else {
+    // Afficher du plus récent au plus ancien
+    liste.slice().reverse().forEach(r => {
+      html += "<tr><td>"+r.numero+"</td><td>"+r.nom+"<br><small>"+r.service+"</small></td><td>"+r.montant+" CDF</td><td>"+r.date+"</td></tr>";
+    });
+  }
+  html += "</table>";
+  document.getElementById("listeRecus").innerHTML = html;
+
+  document.getElementById("pageFormulaire").style.display = "none";
+  document.getElementById("pageRecu").style.display = "none";
+  document.getElementById("pageStats").style.display = "block";
+}
+
+function retourFormulaire(){
+  document.getElementById("pageStats").style.display = "none";
+  document.getElementById("pageFormulaire").style.display = "block";
+  afficherTotal();
 }
 </script>
+
 </body>
 </html>
