@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Réserver une Assistance - Solar Detect</title>
+<style>
+body{font-family:Arial;background:#f2f2f2;margin:0;padding:12px}
+.form-box{max-width:520px;margin:0 auto;background:#fff;padding:20px;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+h2{text-align:center;margin:0 0 5px;font-size:20px}
+.sous-titre{text-align:center;color:#555;font-size:13px;margin:0 0 20px}
+label{display:block;text-align:center;font-weight:bold;font-size:14px;margin:14px 0 6px}
+input,select,textarea{width:100%;padding:11px;border-radius:10px;border:1px solid #ccc;font-size:14px;box-sizing:border-box;background:#fff;outline:none}
+input:focus,select:focus,textarea:focus{border-color:#0a6b2e}
+textarea{min-height:80px;resize:vertical}
+.btn-whatsapp{width:100%;margin-top:20px;background:#ffcc00;color:#000;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer}
+.btn-retour{display:block;text-align:center;margin-top:15px;color:#0a6b2e;font-size:14px;text-decoration:none}
+.note{text-align:center;font-size:12px;color:#888;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="form-box">
+  <h2>Réserver une Assistance</h2>
+  <p class="sous-titre">Remplis ce formulaire, ça part direct sur notre WhatsApp.</p>
+  <label>Nom complet *</label>
+  <input type="text" id="nom" placeholder="Ex: Jean Kalume">
+  <label>Téléphone / WhatsApp *</label>
+  <input type="tel" id="telephone" placeholder="Ex: +243 97X XXX XXX">
+  <label>Type d'assistance *</label>
+  <select id="type">
+    <option value="">-- Choisis --</option>
+    <option>Installation panneau solaire</option>
+    <option>Réparation régulateur / MPPT</option>
+    <option>Vérification VRAI ou FAKE</option>
+    <option>Installation batterie / Onduleur</option>
+    <option>Maintenance / Dépannage</option>
+    <option>Autre</option>
+  </select>
+  <label>Date souhaitée *</label>
+  <input type="date" id="date">
+  <label>Adresse / Quartier à Kalemie *</label>
+  <input type="text" id="adresse" placeholder="Ex: Quartier Katanga, Kalemie">
+  <label>Décris ton problème</label>
+  <textarea id="probleme" placeholder="Ex: Mon panneau ne charge plus..."></textarea>
+  <button class="btn-whatsapp" onclick="envoyerWhatsApp()">Envoyer ma réservation sur WhatsApp</button>
+  <a class="btn-retour" href="index.html">← Retour à Solar Detect</a>
+  <p class="note">Solar Detect - Kalemie, Congo</p>
+</div>
+<script>
+function envoyerWhatsApp(){
+  let numeroPro = "243975000000";
+  let nom = document.getElementById("nom").value.trim();
+  let tel = document.getElementById("telephone").value.trim();
+  let type = document.getElementById("type").value;
+  let date = document.getElementById("date").value;
+  let adresse = document.getElementById("adresse").value.trim();
+  let probleme = document.getElementById("probleme").value.trim();
+  if(nom === "" || tel === "" || type === "" || date === "" || adresse === ""){
+    alert("Remplis tous les champs avec * s'il te plait");
+    return;
+  }
+  let message = "Bonjour Solar Detect,\n";
+  message += "Je veux reserver une assistance :\n\n";
+  message += "Nom : " + nom + "\n";
+  message += "Telephone : " + tel + "\n";
+  message += "Type : " + type + "\n";
+  message += "Date : " + date + "\n";
+  message += "Adresse : " + adresse + "\n";
+  message += "Probleme : " + probleme;
+  let lien = "https://wa.me/" + numeroPro + "?text=" + encodeURIComponent(message);
+  window.open(lien, "_blank");
+}
+</script>
+</body>
+</html>
